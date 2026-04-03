@@ -1,6 +1,8 @@
 # Multiple-Comparisons-Method
 
 
+
+# My Comparison Function
 my_comparison <- function(means, J, MSE, alpha = 0.05) { 
   I <- length(means) #gets amount of groups
   df_error <- I*(J-1)
@@ -16,7 +18,8 @@ my_comparison <- function(means, J, MSE, alpha = 0.05) {
   return (as.data.frame(sig_matrix)) #returns the true/false matrix
 }
 
-simulate_fwer <- function(I, J, sigma = 1, n_sim = sim, alpha = 0.05) { #simulates Family Wise Error
+# Simulate Family Wise Error
+simulate_fwer <- function(I, J, sigma = 1, n_sim = sim, alpha = 0.05) { 
   false_rejections <- 0 #will be used to count times a significant difference was found
   for (sim in 1:n_sim) { #repeat for as many simulations as instructed
 
@@ -35,6 +38,7 @@ simulate_fwer <- function(I, J, sigma = 1, n_sim = sim, alpha = 0.05) { #simulat
   return(false_rejections / n_sim) #returns the proportion of times a simulation (incorrectly) reported a significant difference
 }
 
+# Create FWER data frame
 fwerDF <- data.frame() #create an empty data frame
 fwerCalc <- function(i){
   fwerI <- c() #create empty vector
@@ -45,7 +49,7 @@ fwerCalc <- function(i){
   return <- fwerI #returns the FWER for a given I and J's 5-20
 }
 
-#fill in FWER data frame with each I and J FWER value
+# Fill in FWER data frame with each I and J FWER value
 I2 <- fwerCalc(2)
 fwerDF <- rbind(I2)
 I3 <- fwerCalc(3)
@@ -66,7 +70,7 @@ I10 <- fwerCalc(10)
 fwerDF <- rbind(fwerDF,I10)
 colnames(fwerDF) <- c("J5", "J6","J7","J8","J9","J10","J11","J12","J13","J14","J15","J16","J17","J18","J19","J20") #name columns for clarity
 
-#POWER
+# Simulate Power
 simulate_pow <- function(I, J, sigma = 1, n_sim, alpha = 0.05, delta = 2) { #function to simulate power
   true_rejections <- 0    #set base count for rejections
   for (sim in 1:n_sim) {      #runs 1,000 simulations
@@ -83,6 +87,8 @@ simulate_pow <- function(I, J, sigma = 1, n_sim, alpha = 0.05, delta = 2) { #fun
   }
   return(true_rejections / n_sim) #returns the proportion of simulations that
 }
+
+# Create power data frame
 powDF <- data.frame() #creates empty power data frame
 powCalc <- function(i){
   powI <- c() #creates empty vector
@@ -93,7 +99,7 @@ powCalc <- function(i){
   return <- powI #returns vector with the power for I and for j 5-20
 }
 
-#fill in power data frame with each I and J power value
+# Fill in power data frame with each I and J power value
 I2 <- powCalc(2)
 powDF <- rbind(I2)
 I3 <- powCalc(3)
