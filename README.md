@@ -2,27 +2,20 @@
 This code provides an alternative to methods such as Tukey HSD by adjusting alpha based off the number of pairwise comparisons necessary. This code also shows the family wise error and power of my method, so it is clear how it functions.
 
 
+
 my_comparison <- function(means, J, MSE, alpha = 0.05) { 
-  #gets amount of groups
-  I <- length(means) 
+  I <- length(means) #gets amount of groups
   df_error <- I*(J-1)
-  #m is number of pairwise comparisons
-  m <- I*(I-1)/2
-  #the adjustment takes the number of pairwise comparisons and divides it by a slightly larger number based off m
-  adjustment <- m/(m+log10(m)) 
+  m <- I*(I-1)/2  # m is number of pairwise comparisons
+  adjustment <- m/(m+log10(m)) #the adjustment takes the number of pairwise comparisons and divides it by a slightly larger number
   #alpha is divided by the number of comparisons to the power of the adjustment
   #the more pairwise comparisons, the smaller the alpha adjusted will be
-  alpha_adjusted <- alpha / m^(adjustment)  
-  #find critical t value using adjusted alpha
-  t_crit <- qt(1 - alpha_adjusted / 2, df_error) 
-  #find the critical difference for significance
-  critical_diff <- t_crit * sqrt(2 * MSE / J)
-  #creates a matrix of all the differences of means from the samples
-  diff_matrix <- outer(means, means, "-") 
-  #creates true false matrix based on if the differences of means are outside critical region
-  sig_matrix <- (diff_matrix > critical_diff) | (diff_matrix < -critical_diff)
-  #returns the true/false matrix
-  return (as.data.frame(sig_matrix)) 
+  alpha_adjusted <- alpha / m^(adjustment)  # divide alpha by the number of the comparisons to the adjusted value
+  t_crit <- qt(1 - alpha_adjusted / 2, df_error) #find critical t value using adjusted alpha
+  critical_diff <- t_crit * sqrt(2 * MSE / J) #find the critical difference for significance
+  diff_matrix <- outer(means, means, "-") # creates a matrix of all the differences of means from the samples
+  sig_matrix <- (diff_matrix > critical_diff) | (diff_matrix < -critical_diff) #creates true false matrix based on if the differences of means are outside critical region
+  return (as.data.frame(sig_matrix)) #returns the true/false matrix
 }
 
 simulate_fwer <- function(I, J, sigma = 1, n_sim = sim, alpha = 0.05) { #simulates Family Wise Error
