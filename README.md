@@ -1,53 +1,51 @@
 # Multiple-Comparisons-Method
 
 
-
 # My Comparison Function
-# The adjustment takes the number of pairwise comparisons (m) and divides it by a slightly larger number based off m
-# Alpha is divided by the number of comparisons to the power of the adjustment
-# The more pairwise comparisons, the smaller the alpha adjusted will be
-
 my_comparison <- function(means, J, MSE, alpha = 0.05) { 
-  I <- length(means) 
+  I <- length(means) # Gets amount of groups
   df_error <- I*(J-1)
-  m <- I*(I-1)/2  
-  adjustment <- m/(m+log10(m)) 
-  alpha_adjusted <- alpha / m^(adjustment) 
-  t_crit <- qt(1 - alpha_adjusted / 2, df_error) 
-  critical_diff <- t_crit * sqrt(2 * MSE / J) 
-  diff_matrix <- outer(means, means, "-") 
-  sig_matrix <- (diff_matrix > critical_diff) | (diff_matrix < -critical_diff)
-  return (as.data.frame(sig_matrix)) 
+  m <- I*(I-1)/2  # m is number of pairwise comparisons
+  adjustment <- m/(m+log10(m)) # The adjustment takes the number of pairwise comparisons and divides it by a slightly larger number
+  # alpha is divided by the number of comparisons to the power of the adjustment
+  # The more pairwise comparisons, the smaller the alpha adjusted will be
+  alpha_adjusted <- alpha / m^(adjustment)  # Divide alpha by the number of the comparisons to the adjusted value
+  t_crit <- qt(1 - alpha_adjusted / 2, df_error) # Find critical t value using adjusted alpha
+  critical_diff <- t_crit * sqrt(2 * MSE / J) # Find the critical difference for significance
+  diff_matrix <- outer(means, means, "-") # Creates a matrix of all the differences of means from the samples
+  sig_matrix <- (diff_matrix > critical_diff) | (diff_matrix < -critical_diff) # Creates true false matrix based on if the differences of means are outside critical region
+  return (as.data.frame(sig_matrix)) # Returns the true/false matrix
 }
 
 # Simulate Family Wise Error
-  # First calculate summary statistics then apply my method
-
 simulate_fwer <- function(I, J, sigma = 1, n_sim = sim, alpha = 0.05) { 
-  false_rejections <- 0 
-  for (sim in 1:n_sim) { 
-
-    data <- matrix(rnorm(I * J, mean = 0, sd = sigma), nrow = I, ncol = J) 
-    means <- rowMeans(data) 
-    MSE <- mean(apply(data, 1, var))
+  false_rejections <- 0 # Will be used to count times a significant difference was found
+  for (sim in 1:n_sim) { # Repeat for as many simulations as instructed
     
-    results <- my_comparison(means, J, MSE, alpha) 
-    if (any(results == TRUE)) { 
-      false_rejections <- false_rejections + 1
+    data <- matrix(rnorm(I * J, mean = 0, sd = sigma), nrow = I, ncol = J)  # Generate data under H0 (all means = 0)
+    # Calculate summary statistics
+    means <- rowMeans(data) # Find means of populations
+    MSE <- mean(apply(data, 1, var)) # Use pooled variance to find mean standard error
+    
+    # Apply my method
+    results <- my_comparison(means, J, MSE, alpha) # Calls my function and saves true/false matrix
+    # Check if any rejection occurred
+    if (any(results == TRUE)) { # Loop will check if there were any TRUEs
+      false_rejections <- false_rejections + 1 # If there is a significant difference recorded, add it to counter
     }
   }
-  return(false_rejections / n_sim)
+  return(false_rejections / n_sim) # Returns the proportion of times a simulation (incorrectly) reported a significant difference
 }
 
 # Create FWER data frame
-fwerDF <- data.frame() 
+fwerDF <- data.frame() # Create an empty data frame
 fwerCalc <- function(i){
-  fwerI <- c() 
+  fwerI <- c() # Create empty vector
   for(j in 5:20){
     fwer <- simulate_fwer (2, j, sigma = 1, n_sim = 1000, alpha = 0.05) #I = i, J =j sigma = 1, 1000 simulations, alpha is .05
-    fwerI <- c(fwerI, fwer) 
+    fwerI <- c(fwerI, fwer) # Save the fwer for a given I and J
   }
-  return <- fwerI 
+  return <- fwerI # Returns the FWER for a given I and J's 5-20
 }
 
 # Fill in FWER data frame with each I and J FWER value
@@ -69,34 +67,35 @@ I9 <- fwerCalc(9)
 fwerDF <- rbind(fwerDF,I9)
 I10 <- fwerCalc(10)
 fwerDF <- rbind(fwerDF,I10)
-colnames(fwerDF) <- c("J5", "J6","J7","J8","J9","J10","J11","J12","J13","J14","J15","J16","J17","J18","J19","J20") 
+colnames(fwerDF) <- c("J5", "J6","J7","J8","J9","J10","J11","J12","J13","J14","J15","J16","J17","J18","J19","J20") # Name columns for clarity
 
 # Simulate Power
-simulate_pow <- function(I, J, sigma = 1, n_sim, alpha = 0.05, delta = 2) { 
-  true_rejections <- 0   
-  for (sim in 1:n_sim) {   
-    row_means <- c(0, 0, 0, delta, delta) 
-    mean_vector <- rep(row_means, each = J) 
-    data <- matrix(rnorm(I * J, mean = mean_vector, sd = sigma), nrow = I,  ncol = J, byrow = TRUE)
-    MSE <- mean(apply(data, 1, var)) 
+simulate_pow <- function(I, J, sigma = 1, n_sim, alpha = 0.05, delta = 2) { # Function to simulate power
+  true_rejections <- 0    # Set base count for rejections
+  for (sim in 1:n_sim) {      # Runs 1,000 simulations
+    row_means <- c(0, 0, 0, delta, delta)   # Creates the population means, with two that are different from the other three
+    mean_vector <- rep(row_means, each = J) # Creates vector of the means
+    data <- matrix(rnorm(I * J, mean = mean_vector, sd = sigma), nrow = I,  ncol = J, byrow = TRUE)    # Creates an I by J matrix of generated data using means and sigma = 1,
+    MSE <- mean(apply(data, 1, var)) # Simplified; use pooled variance
     
-    results <- my_comparison(row_means, J, MSE, alpha) 
-    if (sum(results == TRUE) >0 ) {          
-      true_rejections <- true_rejections + 1 
+    # Applying my method
+    results <- my_comparison(row_means, J, MSE, alpha)      # Runs my comparison function with given means and MSE, alpha =.05
+    if (sum(results == TRUE) >0 ) {           # Sees if my comparison correctly identified a difference
+      true_rejections <- true_rejections + 1      # Counts how many times there's a TRUE value in results matrix aka every time the null was correctly rejected
     }
   }
-  return(true_rejections / n_sim) 
+  return(true_rejections / n_sim) # Returns the proportion of simulations that
 }
 
 # Create power data frame
-powDF <- data.frame() 
+powDF <- data.frame() # Creates empty power data frame
 powCalc <- function(i){
-  powI <- c() 
+  powI <- c() # Creates empty vector
   for(j in 5:20){
-    pow <- simulate_pow (2, j, sigma = 1, n_sim = 1000, alpha = 0.05)
-    powI <- c(powI, pow) 
+    pow <- simulate_pow (2, j, sigma = 1, n_sim = 1000, alpha = 0.05) # I = i, J =j sigma = 1, 100 simulations, alpha is .05
+    powI <- c(powI, pow) # Adds power for I J to the power I vector
   }
-  return <- powI 
+  return <- powI # Returns vector with the power for I and for j 5-20
 }
 
 # Fill in power data frame with each I and J power value
