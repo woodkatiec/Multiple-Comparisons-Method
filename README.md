@@ -8,7 +8,7 @@
 # The more pairwise comparisons, the smaller the alpha adjusted will be
 
 my_comparison <- function(means, J, MSE, alpha = 0.05) { 
-  I <- length(means) # Gets amount of groups
+  I <- length(means) 
   df_error <- I*(J-1)
   m <- I*(I-1)/2  
   adjustment <- m/(m+log10(m)) 
