@@ -24,20 +24,19 @@ my_comparison <- function(means, J, MSE, alpha = 0.05) {
   # First calculate summary statistics then apply my method
 
 simulate_fwer <- function(I, J, sigma = 1, n_sim = sim, alpha = 0.05) { 
-  false_rejections <- 0 # Will be used to count times a significant difference was found
-  for (sim in 1:n_sim) { # Repeat for as many simulations as instructed
+  false_rejections <- 0 
+  for (sim in 1:n_sim) { 
 
-    data <- matrix(rnorm(I * J, mean = 0, sd = sigma), nrow = I, ncol = J)  # Generate data under H0 (all means = 0)
-    means <- rowMeans(data) # Find means of populations
-    MSE <- mean(apply(data, 1, var)) # Use pooled variance to find mean standard error
+    data <- matrix(rnorm(I * J, mean = 0, sd = sigma), nrow = I, ncol = J) 
+    means <- rowMeans(data) 
+    MSE <- mean(apply(data, 1, var))
     
-    results <- my_comparison(means, J, MSE, alpha) # Calls my function and saves true/false matrix
-    # Check if any rejection occurred
-    if (any(results == TRUE)) { # Loop will check if there were any TRUEs
-      false_rejections <- false_rejections + 1 # If there is a significant difference recorded, add it to counter
+    results <- my_comparison(means, J, MSE, alpha) 
+    if (any(results == TRUE)) { 
+      false_rejections <- false_rejections + 1
     }
   }
-  return(false_rejections / n_sim) # Returns the proportion of times a simulation (incorrectly) reported a significant difference
+  return(false_rejections / n_sim)
 }
 
 # Create FWER data frame
