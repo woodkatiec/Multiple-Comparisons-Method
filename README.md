@@ -2,7 +2,7 @@
 # My comparison function adjusts alpha to using the formula: 
       adjusted alpha = alpha/m^(m/(m+log10(m)))
 
-# To use my function call the function "wood_comparison" with the following parameters
+# To use my function call the function "zewari_comparison" with the following parameters
   1. a vector with the means of each population
   2. the number of observations per population
   3. the mean standard error of the populations
