@@ -1,4 +1,4 @@
-wood_comparison <- function(means, J, MSE, alpha = 0.05) {
+zewari_comparison <- function(means, J, MSE, alpha = 0.05) {
 
   I <- length(means) #gets amount of groups
   df_error <- I*(J-1)
