@@ -1,7 +1,7 @@
 # ZEWARI COMPARISON
 # KATIE WOOD
 # Zewari comparison provides an alternative to methods such as Tukey's HSD
-# Comparison functions by dividing the alpha level by m^(m/(m+log10(m)) where m is the number of pariwise comparisons
+# Comparison operates by dividing the alpha level by m^(m/(m+log10(m)), where m is the number of pariwise comparisons
 
 set.seed (0)
 zewari_comparison <- function(means, J, MSE, alpha = 0.05) {
