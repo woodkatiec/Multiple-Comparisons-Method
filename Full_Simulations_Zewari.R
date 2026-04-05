@@ -1,6 +1,6 @@
 # ZEWARI COMPARISON
 # KATIE WOOD
-# Zewari comparison provides an alternative to methods such as Tukey's HSD
+# Zewari comparison provides an alternative to methods such as Tukey's HSD 
 # Comparison operates by dividing the alpha level by m^(m/(m+log10(m)), where m is the number of pariwise comparisons
 
 set.seed (0)
