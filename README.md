@@ -1,8 +1,7 @@
 # Multiple-Comparisons-Method
-# My comparison function uses standard t value and critical difference calculation, but adjusts alpha to using the formula: 
+# My comparison function uses standard t value and critical difference calculation, but adjusts alpha using the following formula: 
       number of pairwise comparisons = m= I*(I-1)/2)
       adjusted alpha = alpha/m^(m/(m+log10(m)))
-      # Method:
 
 # To use my function call the function "zewari_comparison" with the following parameters
   1. a vector with the means of each population
