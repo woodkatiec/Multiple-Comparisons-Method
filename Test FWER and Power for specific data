@@ -62,6 +62,7 @@ J <- #number_of_observations
 alpha <- #alpha_value
 standard_dev <- #standard_deviation
 diff <- #mean_difference
+delta <- diff/standard_dev
 
 #Run Specific FWER Simulation
 fwer <- simulate_fwer(I, J, standard_dev, 10000, alpha)
