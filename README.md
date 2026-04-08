@@ -20,6 +20,10 @@
 2  TRUE FALSE  TRUE
 3  TRUE  TRUE FALSE
 
-# Zewari method is best for when false positives want to be avoided and when there are 8 or more observations per population
-   The Zewari method tends to be slightly conservative, check full simulation code for data frame with FWER for I:2-9, J:5-20
-   The Zewari method tends to have almost identical powr to Tukey for I:5, J:10, check power table in full simulation code to see if       power for a given I and J is desired for a given scenario 
+# Zewari Method Usage and Limitations
+   The Zewari method tends to be slightly conservative, with lower FWER than alpha. It has almost identical, but slightly less power than Tukey's method.
+   The difference in power between Tukey and Zewari method is much smaller than the difference in FWER.
+   Thus, the Zewari method should be used when false positives need to be avoided.
+   Ideal Scenario: Zewari method has highest power and lowest FWER combination for I=10, J=19:
+         Zewari's ower is only .0002 less than Tukey, but the error is lowered by .01002 
+   Code for checking Zewari's power and FWER for specific I, J, standard deviation, and alpha is available in respository.
