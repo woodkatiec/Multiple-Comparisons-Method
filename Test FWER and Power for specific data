@@ -1,0 +1,72 @@
+#Zewari Comparison Function
+zewari_comparison <- function(means, J, MSE, alpha = 0.05) {
+  
+  I <- length(means) #gets amount of groups
+  df_error <- I*(J-1)
+  m <- I*(I-1)/2  # number of pairwise comparisons
+  adjustment <- m/(m+log10(m)) #adjustment will be a number slightly smaller than m itself
+  alpha_adjusted <- alpha / m^adjustment     #divide alpha by m^adjustment to shrink alpha
+  t_crit <- qt(1 - alpha_adjusted / 2, df_error) #calculate critical t-value
+  critical_diff <- t_crit * sqrt(2 * MSE / J) #calculate critical difference
+  diff_matrix <- outer(means, means, "-")  #creates a matrix of all the differences of means from the samples
+  sig_matrix <- (diff_matrix > critical_diff) | (diff_matrix < -critical_diff) #creates true false matrix based on if the differences of means are outside critical region
+  return (as.data.frame(sig_matrix)) #returns the true/false matrix
+}
+
+#Simulates Family Wise Error
+simulate_fwer <- function(I, J, sigma = 1, n_sim = 10000, alpha = 0.05) {
+  false_rejections <- 0 #will be used to count times a significant difference was found
+  for (sim in 1:n_sim) { #repeat for as many simulations as instructed
+    # Generate data under H0 (all means = 0)
+    data <- matrix(rnorm(I * J, mean = 0, sd = sigma), nrow = I, ncol = J)
+    # Calculate summary statistics
+    means <- rowMeans(data) # Find means of populations
+    MSE <- mean(apply(data, 1, var)) # Simplified; use pooled variance to find mean standard error
+    # Apply my method
+    results <- zewari_comparison(means, J, MSE, alpha) #calls my function and saves true/false matrix
+    # Check if any rejection occurred
+    if (any(results == TRUE)) { # Loop will add to counter if there were any TRUEs
+      false_rejections <- false_rejections + 1 # If there is a significant difference recorded, add it to counter
+    }
+  }
+  return(false_rejections / n_sim) # Returns the proportion of times a simulation (incorrectly) reported a significant difference
+}
+
+#Simulates Power
+simulate_pow <- function(I, J, sigma = 1, n_sim = 10000, alpha = 0.05, delta = 1) { #function to simulate power
+  true_rejections <- 0    #set base count for rejections
+  for (sim in 1:n_sim) {      #runs n_sim simulations
+    row_means <- c()
+    for (i in 1:(I-1))
+    {
+      row_means <- c(row_means, 0)
+    }
+    row_means <- c(row_means, delta)
+    mean_vector <- rep(row_means, each = J) # Creates vector of the means
+    data <- matrix(rnorm(I * J, mean = mean_vector, sd = sigma), nrow = I,  ncol = J, byrow = TRUE) #Creates data with one population whose mean is different by delta
+    MSE <- mean(apply(data, 1, var)) # Simplified; using pooled variance
+    
+    # Applying my method
+    means <- rowMeans(data)
+    results <- zewari_comparison(means, J, MSE, alpha)      #runs my comparison function with given means and MSE, alpha =.05
+    if (sum(results == TRUE) >0 ) {           #checks if matrix has TRUE(s) in it and thus found a difference
+      true_rejections <- true_rejections + 1      #counts how many times there's a true value in results matrix aka every time the null (all populations equal) was correctly rejected
+    }
+  }
+  return(true_rejections / n_sim) #returns the proportion of simulations that correctly found a significant difference
+}
+
+#Input your Data  Here
+I <- #number_of_populations
+J <- #number_of_observations
+alpha <- #alpha_value
+standard_dev <- #standard_deviation
+diff <- #mean_difference
+
+#Run Specific FWER Simulation
+fwer <- simulate_fwer(I, J, standard_dev, 10000, alpha)
+print(fwer)
+
+#Run Specific Power Simulation
+pow <- simulate_pow(I, J, standard_dev, 10000, alpha, delta)
+print(pow)
