@@ -1,4 +1,3 @@
-#Zewari Comparison Function
 zewari_comparison <- function(means, J, MSE, alpha = 0.05) {
   
   I <- length(means) #gets amount of groups
@@ -12,8 +11,6 @@ zewari_comparison <- function(means, J, MSE, alpha = 0.05) {
   sig_matrix <- (diff_matrix > critical_diff) | (diff_matrix < -critical_diff) #creates true false matrix based on if the differences of means are outside critical region
   return (as.data.frame(sig_matrix)) #returns the true/false matrix
 }
-
-#Simulates Family Wise Error
 simulate_fwer <- function(I, J, sigma = 1, n_sim = 10000, alpha = 0.05) {
   false_rejections <- 0 #will be used to count times a significant difference was found
   for (sim in 1:n_sim) { #repeat for as many simulations as instructed
@@ -21,7 +18,7 @@ simulate_fwer <- function(I, J, sigma = 1, n_sim = 10000, alpha = 0.05) {
     data <- matrix(rnorm(I * J, mean = 0, sd = sigma), nrow = I, ncol = J)
     # Calculate summary statistics
     means <- rowMeans(data) # Find means of populations
-    MSE <- mean(apply(data, 1, var)) # Simplified; use pooled variance to find mean standard error
+    MSE <- sum(apply(data, 1, var) * (J - 1)) / (I * (J - 1))
     # Apply my method
     results <- zewari_comparison(means, J, MSE, alpha) #calls my function and saves true/false matrix
     # Check if any rejection occurred
@@ -31,8 +28,6 @@ simulate_fwer <- function(I, J, sigma = 1, n_sim = 10000, alpha = 0.05) {
   }
   return(false_rejections / n_sim) # Returns the proportion of times a simulation (incorrectly) reported a significant difference
 }
-
-#Simulates Power
 simulate_pow <- function(I, J, sigma = 1, n_sim = 10000, alpha = 0.05, delta = 1) { #function to simulate power
   true_rejections <- 0    #set base count for rejections
   for (sim in 1:n_sim) {      #runs n_sim simulations
@@ -44,7 +39,7 @@ simulate_pow <- function(I, J, sigma = 1, n_sim = 10000, alpha = 0.05, delta = 1
     row_means <- c(row_means, delta)
     mean_vector <- rep(row_means, each = J) # Creates vector of the means
     data <- matrix(rnorm(I * J, mean = mean_vector, sd = sigma), nrow = I,  ncol = J, byrow = TRUE) #Creates data with one population whose mean is different by delta
-    MSE <- mean(apply(data, 1, var)) # Simplified; using pooled variance
+    MSE <- sum(apply(data, 1, var) * (J - 1)) / (I * (J - 1))
     
     # Applying my method
     means <- rowMeans(data)
@@ -56,18 +51,19 @@ simulate_pow <- function(I, J, sigma = 1, n_sim = 10000, alpha = 0.05, delta = 1
   return(true_rejections / n_sim) #returns the proportion of simulations that correctly found a significant difference
 }
 
-#Input your Data  Here
-I <- #number_of_populations
-J <- #number_of_observations
-alpha <- #alpha_value
-standard_dev <- #standard_deviation
-diff <- #mean_difference
+
+#Gets Information About Data Set
+I <- as.numeric(readline(prompt = "Enter the Number of Populations: "))
+J <- as.numeric(readline(prompt = "Enter the Number of Observations per Population: "))
+alpha <- as.numeric(readline(prompt = "Enter the Alpha Value: "))
+standard_dev <- as.numeric(readline(prompt = "Enter the Standard Deviation: "))
+diff <- as.numeric(readline(prompt = "Enter the largest Difference in Means: "))
 delta <- diff/standard_dev
 
-#Run Specific FWER Simulation
+#Runs Specific FWER Simulation
 fwer <- simulate_fwer(I, J, standard_dev, 10000, alpha)
 print(fwer)
 
-#Run Specific Power Simulation
+#Runs Specific Power Simulation
 pow <- simulate_pow(I, J, standard_dev, 10000, alpha, delta)
 print(pow)
