@@ -4,11 +4,11 @@ zewari_comparison <- function(means, J, MSE, alpha = 0.05) {
   df_error <- I*(J-1)
   m <- I*(I-1)/2  # number of pairwise comparisons
   adjustment <- m/(m+log10(m))
-  alpha_adjusted <- alpha / m^(adjustment)  # divide alpha by number of pairwise comparisons
+  alpha_adjusted <- alpha / m^(adjustment)  # divide alpha by number of pairwise comparisons to the power of the adjustment
   t_crit <- qt(1 - alpha_adjusted / 2, df_error)
-  critical_diff <- t_crit * sqrt(2 * MSE / J) #calculate critical difference
+  critical_diff <- t_crit * sqrt(2 * MSE / J) # calculate critical difference
   diff_matrix <- outer(means, means, "-") # creates a matrix of all the differences of means from the samples
-  sig_matrix <- (diff_matrix > critical_diff) | (diff_matrix < -critical_diff) #creates true false matrix based on if the differences of means are outside critical region
+  sig_matrix <- (diff_matrix > critical_diff) | (diff_matrix < -critical_diff) #creates a TRUE/FALSE matrix based on if the differences of means are outside critical region
   return (as.data.frame(sig_matrix)) #returns the true/false matrix
 }
 
@@ -29,11 +29,11 @@ for (i in 101:150){
   virginica <- c(virginica, iris$Petal.Length[i])
 }
 
-#calculate mean of each groups petal length
+#calculate mean petal length of each group
 means <- c(sum(setosa)/50, sum(versicolor)/50, sum(virginica)/50)
 #calculate MSE
 MSE <- (sd(setosa)^2*49 +  sd(versicolor)^2*49 +  sd(virginica)^2*49)/147
 
 
-irisResults <- wood_comparison(means, 50, MSE, .05)
+irisResults <- zewari_comparison(means, 50, MSE, .05)
 print(irisResults)
