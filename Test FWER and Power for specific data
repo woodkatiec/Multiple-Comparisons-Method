@@ -8,8 +8,8 @@ zewari_comparison <- function(means, J, MSE, alpha = 0.05) {
   t_crit <- qt(1 - alpha_adjusted / 2, df_error) #calculate critical t-value
   critical_diff <- t_crit * sqrt(2 * MSE / J) #calculate critical difference
   diff_matrix <- outer(means, means, "-")  #creates a matrix of all the differences of means from the samples
-  sig_matrix <- (diff_matrix > critical_diff) | (diff_matrix < -critical_diff) #creates true false matrix based on if the differences of means are outside critical region
-  return (as.data.frame(sig_matrix)) #returns the true/false matrix
+  sig_matrix <- (diff_matrix > critical_diff) | (diff_matrix < -critical_diff) #creates a TRUE/FALSE matrix based on if the differences of means are outside critical region
+  return (as.data.frame(sig_matrix)) #returns the TRUE/FALSE matrix
 }
 simulate_fwer <- function(I, J, sigma = 1, n_sim = 10000, alpha = 0.05) {
   false_rejections <- 0 #will be used to count times a significant difference was found
@@ -20,7 +20,7 @@ simulate_fwer <- function(I, J, sigma = 1, n_sim = 10000, alpha = 0.05) {
     means <- rowMeans(data) # Find means of populations
     MSE <- sum(apply(data, 1, var) * (J - 1)) / (I * (J - 1))
     # Apply my method
-    results <- zewari_comparison(means, J, MSE, alpha) #calls my function and saves true/false matrix
+    results <- zewari_comparison(means, J, MSE, alpha) #calls my function and saves TRUE/FALSE matrix
     # Check if any rejection occurred
     if (any(results == TRUE)) { # Loop will add to counter if there were any TRUEs
       false_rejections <- false_rejections + 1 # If there is a significant difference recorded, add it to counter
@@ -45,7 +45,7 @@ simulate_pow <- function(I, J, sigma = 1, n_sim = 10000, alpha = 0.05, delta = 1
     means <- rowMeans(data)
     results <- zewari_comparison(means, J, MSE, alpha)      #runs my comparison function with given means and MSE, alpha =.05
     if (sum(results == TRUE) >0 ) {           #checks if matrix has TRUE(s) in it and thus found a difference
-      true_rejections <- true_rejections + 1      #counts how many times there's a true value in results matrix aka every time the null (all populations equal) was correctly rejected
+      true_rejections <- true_rejections + 1      #counts how many times there's a TRUE value in results matrix aka every time the null (all populations equal) was correctly rejected
     }
   }
   return(true_rejections / n_sim) #returns the proportion of simulations that correctly found a significant difference
