@@ -1,12 +1,12 @@
 # ZEWARI COMPARISON
 # KATIE WOOD
 # Zewari comparison provides an alternative to methods such as Tukey's HSD 
-# Comparison operates by dividing the alpha level by m^(m/(m+log10(m)), where m is the number of pariwise comparisons
+# Comparison operates by dividing the alpha level by m^(m/(m+log10(m)), where m is the number of pairwise comparisons
 
 set.seed (0)
 zewari_comparison <- function(means, J, MSE, alpha = 0.05) {
 
-  I <- length(means) #gets amount of groups
+  I <- length(means) #gets number of groups
   df_error <- I*(J-1)
   m <- I*(I-1)/2  # number of pairwise comparisons
   adjustment <- m/(m+log10(m)) #adjustment will be a number slightly smaller than m itself
@@ -14,8 +14,8 @@ zewari_comparison <- function(means, J, MSE, alpha = 0.05) {
   t_crit <- qt(1 - alpha_adjusted / 2, df_error) #calculate critical t-value
   critical_diff <- t_crit * sqrt(2 * MSE / J) #calculate critical difference
   diff_matrix <- outer(means, means, "-")  #creates a matrix of all the differences of means from the samples
-  sig_matrix <- (diff_matrix > critical_diff) | (diff_matrix < -critical_diff) #creates true false matrix based on if the differences of means are outside critical region
-  return (as.data.frame(sig_matrix)) #returns the true/false matrix
+  sig_matrix <- (diff_matrix > critical_diff) | (diff_matrix < -critical_diff) #creates a TRUE/FALSE matrix based on if the differences of means are outside critical region
+  return (as.data.frame(sig_matrix)) #returns the TRUE/FALSE matrix
 }
 
 #FWER
@@ -28,7 +28,7 @@ simulate_fwer <- function(I, J, sigma = 1, n_sim = 10000, alpha = 0.05) {
     means <- rowMeans(data) # Find means of populations
     MSE <- mean(apply(data, 1, var)) # Simplified; use pooled variance to find mean standard error
     # Apply my method
-    results <- zewari_comparison(means, J, MSE, alpha) #calls my function and saves true/false matrix
+    results <- zewari_comparison(means, J, MSE, alpha) #calls my function and saves TRUE/FALSE matrix
     # Check if any rejection occurred
     if (any(results == TRUE)) { # Loop will add to counter if there were any TRUEs
       false_rejections <- false_rejections + 1 # If there is a significant difference recorded, add it to counter
@@ -38,13 +38,13 @@ simulate_fwer <- function(I, J, sigma = 1, n_sim = 10000, alpha = 0.05) {
 }
 
 fwerDF <- data.frame()
-fwerCalc <- function(i){ #calcuates fwer for J 6-20 for a given I
+fwerCalc <- function(i){ #calculates fwer for J 6-20 for a given I
   fwerI <- c()
   for(j in 5:20){
     fwer <- simulate_fwer (i, j, sigma = 1, n_sim = 10000, alpha = 0.05) #I = i, J =j sigma = 1, 10000 simulations, alpha is .05
     fwerI <- c(fwerI, fwer)
   }
-  return (fwerI) # Returns vector that contains all FWER's for I and J 6-20
+  return (fwerI) # Returns vector that contains all FWERs for I and J 6-20
 }
 
 #Build a matrix of FWER for I 2-9 and J 6-20 using my comparison method
