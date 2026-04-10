@@ -14,11 +14,11 @@
   If the results matrix at [i,j] is TRUE it means a difference was detected between populations i and j
 
 # Example results for comparing petal lengths of different species of irises
-> irisResults
-     V1    V2    V3
-1 FALSE  TRUE  TRUE
-2  TRUE FALSE  TRUE
-3  TRUE  TRUE FALSE
+ #irisResults
+    # V1    V2    V3
+#1 FALSE  TRUE  TRUE
+#2  TRUE FALSE  TRUE
+#3  TRUE  TRUE FALSE
 #Full example code is found in zewari_comparison_example
 
 # Zewari Method Usage and Limitations
