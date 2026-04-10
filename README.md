@@ -14,12 +14,7 @@
   If the results matrix at [i,j] is TRUE it means a difference was detected between populations i and j
 
 # Example results for comparing petal lengths of different species of irises
- #irisResults
-    # V1    V2    V3
-#1 FALSE  TRUE  TRUE
-#2  TRUE FALSE  TRUE
-#3  TRUE  TRUE FALSE
-#Full example code is found in zewari_comparison_example
+The Zewari method identified a difference in all of the populations, which is accurate because iris petal length depends on the species. The full example code is found in zewari_comparison_example
 
 # Zewari Method Usage and Limitations
 The Zewari method tends to be slightly conservative, and generally has lower FWER than alpha. It has almost identical, but slightly less power than Tukey's method. However, difference in power between Tukey and Zewari method is much smaller than the difference in FWER. Thus, the Zewari method is generally preferable and should be used when false positives need to be avoided. However, Tukey should be used when it is crucial for power to be absolutely maximized.
