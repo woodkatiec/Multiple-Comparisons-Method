@@ -3,7 +3,7 @@ zewari_comparison <- function(means, J, MSE, alpha = 0.05) {
   I <- length(means) #gets amount of groups
   df_error <- I*(J-1)
   m <- I*(I-1)/2  # number of pairwise comparisons
-  adjustment <- m/(m+log10(m)) #adjustment will be a number slightly smaller than m itself
+  adjustment <- m/(m+log10(m)) #adjustment will be a number slightly less than 1
   alpha_adjusted <- alpha / m^adjustment     #divide alpha by m^adjustment to shrink alpha
   t_crit <- qt(1 - alpha_adjusted / 2, df_error) #calculate critical t-value
   critical_diff <- t_crit * sqrt(2 * MSE / J) #calculate critical difference
