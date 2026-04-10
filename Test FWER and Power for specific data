@@ -57,7 +57,7 @@ I <- as.numeric(readline(prompt = "Enter the Number of Populations: "))
 J <- as.numeric(readline(prompt = "Enter the Number of Observations per Population: "))
 alpha <- as.numeric(readline(prompt = "Enter the Alpha Value: "))
 standard_dev <- as.numeric(readline(prompt = "Enter the Standard Deviation: "))
-diff <- as.numeric(readline(prompt = "Enter the largest Difference in Means: "))
+diff <- as.numeric(readline(prompt = "Enter the Largest Difference in Means: "))
 delta <- diff/standard_dev
 
 #Runs Specific FWER Simulation
